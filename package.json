@@ -1,0 +1,18 @@
+{
+  "name": "book-nook",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "\"\"\u001b[DOnline place for selling books\"\u001b[2~\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon backend/server",
+    "prod": "set NODE_ENV=production && nodemon backend/server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Shakhlyn",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
+  }
+}
