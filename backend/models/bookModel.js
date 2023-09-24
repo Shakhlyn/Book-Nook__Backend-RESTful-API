@@ -94,7 +94,7 @@ const bookSchema = new mongoose.Schema({
 
   Dimention: String,
 
-  weight: String,
+  weight: Number,
 
   //   reviews: 'will be defined as virtual property'
 
