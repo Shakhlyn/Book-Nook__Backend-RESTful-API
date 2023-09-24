@@ -1,5 +1,8 @@
 import express from "express";
 
+import AppError from "./utils/appError.js";
+import catchAsync from "./utils/catchAsync.js";
+
 import Book from "./models/bookModel.js";
 
 const app = express();
@@ -22,79 +25,72 @@ const sendResponse = (res, statusCode, statusMessage, data, ...results) => {
   });
 };
 
-app.get("/api/v1/books", async (req, res) => {
-  try {
+app.get(
+  "/api/v1/books",
+  catchAsync(async (req, res, next) => {
     const books = await Book.find();
 
     sendResponse(res, 200, "success", books, books.length);
-  } catch (err) {
-    sendResponse(res, 404, "fail", err);
-  }
-});
+  })
+);
 
-app.post("/api/v1/books", async (req, res) => {
-  try {
+app.post(
+  "/api/v1/books",
+  catchAsync(async (req, res, next) => {
     const newBook = await Book.create(req.body);
 
     sendResponse(res, 201, "success", newBook);
-  } catch (err) {
-    sendResponse(res, 400, "failed", err);
-  }
-});
+  })
+);
 
-app.get("/api/v1/books/:id", async (req, res, next) => {
-  try {
+app.get(
+  "/api/v1/books/:id",
+  catchAsync(async (req, res, next) => {
     const book = await Book.findById(req.params.id);
 
     if (!book) {
-      const err = new Error(`Not found`);
-      err.statusCode = 404;
-      err.status = "fail";
-      next(err);
+      return next(new AppError("Book not found with this ID", 404));
     }
 
     sendResponse(res, 200, "success", book);
-  } catch (err) {
-    sendResponse(res, 400, "failed", err);
-  }
-});
+  })
+);
 
-app.patch("/api/v1/books/:id", async (req, res) => {
-  try {
+app.patch(
+  "/api/v1/books/:id",
+  catchAsync(async (req, res, next) => {
     const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
 
     if (!book) {
-      const err = new Error(`Not found`);
-      err.statusCode = 404;
-      err.status = "fail";
-      next(err);
+      return next(new AppError("Book not found with this ID", 404));
     }
 
     sendResponse(res, 200, "success", book);
-  } catch (err) {
-    sendResponse(res, 500, "failed", err);
-  }
-});
+  })
+);
 
-app.delete("/api/v1/books/:id", async (req, res) => {
-  try {
-    const book = await Book.findByIdAndDelete(req.params.id);
+app.delete(
+  "/api/v1/books/:id",
+  catchAsync(async (req, res, next) => {
+    const book = await Book.findById(req.params.id);
 
-    sendResponse(res, 204, null);
-  } catch (err) {
-    sendResponse(res, 500, "failed", err);
-  }
-});
+    if (!book) {
+      return next(new AppError("Book not found with this ID", 404));
+    }
+    console.log(book);
+    await Book.findByIdAndDelete(req.params.id);
+
+    sendResponse(res, 204, "success", null);
+  })
+);
 
 app.all("*", (req, res, next) => {
-  const err = new Error(`Can't find ${req.originalUrl} on this server!`);
-  err.status = "fail";
-  err.statusCode = 404;
-
-  next(err);
+  return next(
+    new AppError(`Could not find ${req.originalUrl} on this server`, 404)
+  );
 });
 
 // GLOBAL ERROR HANDLER:
