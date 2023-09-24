@@ -2,6 +2,8 @@ import express from "express";
 
 import AppError from "./utils/appError.js";
 import catchAsync from "./utils/catchAsync.js";
+import globalErrorHandler from "./controllers/errorController.js";
+import sendResponse from "./utils/sendResponse.js";
 
 import Book from "./models/bookModel.js";
 
@@ -14,16 +16,6 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("hello world!!!");
 });
-
-const sendResponse = (res, statusCode, statusMessage, data, ...results) => {
-  res.status(statusCode).json({
-    status: statusMessage,
-    results: results[0],
-    data: {
-      data: data,
-    },
-  });
-};
 
 app.get(
   "/api/v1/books",
@@ -93,12 +85,7 @@ app.all("*", (req, res, next) => {
   );
 });
 
-// GLOBAL ERROR HANDLER:
-app.use((err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || "error";
-
-  sendResponse(res, err.statusCode, err.status, err.message);
-});
+// GLOBAL ERROR HANDLER
+app.use(globalErrorHandler);
 
 export default app;
