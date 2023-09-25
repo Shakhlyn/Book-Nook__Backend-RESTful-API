@@ -10,6 +10,7 @@ const reviewSchema = mongoose.Schema({
 
   rating: {
     type: Number,
+    default: 4.5,
     min: 1,
     max: 5,
   },
@@ -25,7 +26,7 @@ const reviewSchema = mongoose.Schema({
     required: [true, "A review must be belonged to a user"],
   },
 
-  tour: {
+  book: {
     type: mongoose.Schema.ObjectId,
     ref: "Book",
     required: [true, "A review must be belonged to a book"],
