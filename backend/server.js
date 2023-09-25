@@ -17,8 +17,8 @@ mongoose
   })
   .catch((error) => {
     console.log("There is an error in Mongoose Connection");
-    console.log(error.name, error.message);
-    console.log(error);
+    // console.log(error.name, error.message);
+    // console.log(error);
   });
 
 const port = process.env.PORT;

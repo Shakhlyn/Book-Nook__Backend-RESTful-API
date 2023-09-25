@@ -1,10 +1,17 @@
 import AppError from "../utils/appError.js";
 import catchAsync from "../utils/catchAsync.js";
 import sendResponse from "../utils/sendResponse.js";
+import ApiFeatures from "../utils/apiFeatures.js";
 
 export const getAll = (Model) =>
   catchAsync(async (req, res, next) => {
-    const docs = await Model.find();
+    const customisedQuery = new ApiFeatures(Model.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+
+    const docs = await customisedQuery.query;
 
     sendResponse(res, 200, "success", docs, docs.length);
   });

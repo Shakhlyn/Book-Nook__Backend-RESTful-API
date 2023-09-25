@@ -13,10 +13,12 @@ const app = express();
 // body-parser
 app.use(express.json());
 
+// Router Middleware
 app.use("/api/v1/books", bookRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/reviews", reviewRouter);
 
+// Handle errors for non-defined routes
 app.all("*", (req, res, next) => {
   return next(
     new AppError(`Could not find ${req.originalUrl} on this server`, 404)
