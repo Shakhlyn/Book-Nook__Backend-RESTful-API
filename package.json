@@ -6,7 +6,6 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon backend/server",
-    "prod": "set NODE_ENV=production && nodemon backend/server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Shakhlyn",
