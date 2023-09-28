@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 import validator from "validator";
 
 const userSchema = new mongoose.Schema({
@@ -69,6 +70,32 @@ const userSchema = new mongoose.Schema({
 
   //   wishlist: []
 });
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  this.password = await bcrypt.hash(this.password, 12);
+
+  //passwordConfirm is only needed during the validation of password confirmation. No need after that.
+  this.passwordConfirm = undefined;
+  // this.passwordChangedAt = Date.now();
+
+  next();
+});
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password") || this.isNew) return next();
+
+  this.passwordChangedAT = Date.now() - 1000;
+  next();
+});
+
+userSchema.methods.isCorrectPassword = async function (
+  plainPassword,
+  hashedPassword
+) {
+  return await bcrypt.compare(plainPassword, hashedPassword);
+};
 
 const User = mongoose.model("User", userSchema);
 

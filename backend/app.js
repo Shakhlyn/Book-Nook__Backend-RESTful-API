@@ -1,4 +1,5 @@
 import express from "express";
+import cookieParser from "cookie-parser";
 
 import AppError from "./utils/appError.js";
 import globalErrorHandler from "./controllers/errorController.js";
@@ -10,8 +11,16 @@ import reviewRouter from "./routes/reviewRoutes.js";
 const app = express();
 
 // Mddleware:
+// Use cookie-parser middleware
+app.use(cookieParser());
+
 // body-parser
 app.use(express.json());
+
+app.use((req, res, next) => {
+  console.log(req.headers);
+  next();
+});
 
 // Router Middleware
 app.use("/api/v1/books", bookRouter);
