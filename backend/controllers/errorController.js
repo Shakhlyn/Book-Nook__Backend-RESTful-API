@@ -6,7 +6,7 @@ const handleCastError = (err) => {
   return new AppError(message, 400);
 };
 
-const handleDuplcateKeyError = (err) => {
+const handleDuplcateKeyError = (err, next) => {
   //to send the 'duplicate field', we have to extract it from property 'errmsg'
   const value = err.errmsg.match(/"([^"]*)"/g);
   const message = `Duplicate field value: ${value}. Please use another value`;
@@ -21,6 +21,8 @@ const handleValidationError = (err) => {
 };
 
 const sendErrorDev = (err, res) => {
+  // console.log(err);
+  console.log(err.isOperational);
   res.status(err.statusCode).json({
     status: err.status,
     message: err.message,
@@ -30,12 +32,15 @@ const sendErrorDev = (err, res) => {
 };
 
 const sendErrorProduction = (err, res) => {
+  // console.log(err.isOperational);
   if (err.isOperational) {
+    // console.log(`from if : ${err.isOperational}`);
     res.status(err.statusCode).json({
       status: err.status,
       message: err.message,
     });
   } else {
+    // console.log(`from else: ${err.isOperational}`);
     res.status(500).json({
       status: "error",
       message: "Something went wrong!",
@@ -54,19 +59,16 @@ export default function globalErrorHandler(err, req, res, next) {
   } else if (process.env.NODE_ENV === "production") {
     // Handle invalid Database ID:
     if (err.name === "CastError") {
-      err.isOperational = true;
       err = handleCastError(err); // handleCastError() must be assigned to a variable because the variable will be passed in the sendErrorProd() funciton
     }
 
     // Handle Duplicate Database Field
     if (err.code === 11000) {
-      err.isOperational = true;
-      err = handleDuplcateKeyError(err);
+      err = handleDuplcateKeyError(err, next);
     }
 
     // Handle Mongoose Validation Error
     if (err.name === "ValidationError") {
-      err.isOperational = true;
       err = handleValidationError(err);
     }
 

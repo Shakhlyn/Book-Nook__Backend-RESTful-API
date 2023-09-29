@@ -32,7 +32,7 @@ process.on("unhandledRejection", (err) => {
   if (process.env.NODE_ENV === "development") {
     console.log(err);
   }
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === "production") {
     console.log(`${err.name}: ${err.message}`);
   }
 

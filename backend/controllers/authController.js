@@ -1,10 +1,11 @@
 import jwt from "jsonwebtoken";
+import { promisify } from "util";
 
-import catchAsync from "../utils/catchAsync.js";
-import AppError from "../utils/apiFeatures.js";
-// import sendResponse from "../utils/sendResponse.js";
+import catchAsync from "./../utils/catchAsync.js";
+import AppError from "./../utils/appError.js";
+import sendResponse from "./../utils/sendResponse.js";
 
-import User from "../models/userModel.js";
+import User from "./../models/userModel.js";
 
 const signToken = (id) => {
   return jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -20,7 +21,7 @@ const setCookieOptions = () => {
     httpOnly: true, //now browser won't be able to access/modify the cookie
   };
 
-  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
+  // if (process.env.NODE_ENV === "production") cookieOptions.secure = true;  //for testing, there is no way of securing
   return cookieOptions;
 };
 
@@ -32,17 +33,8 @@ const sendToken = (res, token) => {
   res.cookie("jwt", token, cookieOptions);
 };
 
-const sendResponseWithToken = (res, statusCode, token, user) => {
-  res.status(statusCode).json({
-    status: "success",
-    token,
-    data: user,
-  });
-};
-
 export const signUp = catchAsync(async (req, res, next) => {
   const { username, email, password, passwordConfirm } = req.body;
-
   // Create User: save the data of body
   const newUser = await User.create({
     username,
@@ -50,28 +42,19 @@ export const signUp = catchAsync(async (req, res, next) => {
     password,
     passwordConfirm,
   });
-
   // sign a Token
   const token = signToken(newUser._id);
-  // signToken(newUser._id);
-
   // // send the token
   sendToken(res, token);
-  // res.cookie("jwt", token, cookieOptions);
-
-  // console.log(req.cookies.jwt);
-  // console.log(req.headers.cookie.split("=")[1]);   //These values are not same as token, which is sent to user???
-
   // before sending the response, making password and active fields 'undefined' will hide these fields to the users during signup process.
+  // This won't affect the database, rather make newUser variable modified.
   newUser.password = undefined;
   newUser.active = undefined;
-
   //send response
-  //   sendResponse(res, 201, "success", newUser);
-  sendResponseWithToken(res, 201, token, newUser);
+  sendResponse(res, 201, "success", newUser);
 });
 
-export const login = catchAsync(async (req, res, next) => {
+export const logIn = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   // check if fields are not blank
@@ -96,5 +79,50 @@ export const login = catchAsync(async (req, res, next) => {
   user.password = undefined;
   user.active = undefined;
 
-  sendResponseWithToken(res, 201, token, user);
+  //send response
+  sendResponse(res, 201, "success", user);
 });
+
+// export const protect = catchAsync(async (req, res, next) => {
+//   // 1. check if there is any token
+//   const token = req.cookies.jwt;
+
+//   //another option:
+//   // const token = req.headers.cookie.split('=')[1]
+
+//   if (!token) {
+//     return next(new AppError("You are not logged-in", 401));
+//   }
+
+//   //2. verify the token
+//   const decodedTokenObj = await promisify(jwt.verify)(
+//     token,
+//     process.env.JWT_SECRET
+//   );
+
+//   //3. after verification, with the id, find the user
+//   const user = await User.findById(decodedTokenObj.id);
+
+//   //4. check if user is present
+//   if (!user) {
+//     return next(
+//       new AppError(
+//         "You do not have any accout. Please create an account and come back.",
+//         401
+//       )
+//     );
+//   }
+
+//   //if user present, check if 'password' was created before the 'token'
+//   if (user.passwordChangedAfterTokenCreation(decodedTokenObj.iat)) {
+//     return next(
+//       new AppError("User recently changed password! Please log in again.", 401)
+//     );
+//   }
+
+//   // if we send currectUse in req.user, we'll able to use it in many cases without having much troubles
+//   req.user = user;
+
+//   //go to the next operation, if everything is OK.
+//   next();
+// });

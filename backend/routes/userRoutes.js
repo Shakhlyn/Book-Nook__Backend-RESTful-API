@@ -1,6 +1,8 @@
 import express from "express";
 
-import * as authController from "../controllers/authController.js";
+// import * as authController from "../controllers/authController.js";
+
+import { signUp, logIn, protect } from "./../controllers/authController.js";
 
 import {
   getAllUsers,
@@ -12,11 +14,12 @@ import {
 
 const router = express.Router();
 
-router.post("/signup", authController.signUp);
-router.post("/login", authController.login);
+router.post("/signup", signUp);
+router.post("/login", logIn);
 
-router.route("/").get(getAllUsers).post(createUser);
+router.route("/").get(protect, getAllUsers).post(createUser);
 
+router.use(protect);
 router.route("/:id").get(getUser).patch(updateUser).delete(deleteUser);
 
 export default router;
