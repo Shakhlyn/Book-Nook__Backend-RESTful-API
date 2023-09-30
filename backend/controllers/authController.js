@@ -35,22 +35,28 @@ const sendToken = (res, token) => {
 
 export const signUp = catchAsync(async (req, res, next) => {
   const { username, email, password, passwordConfirm } = req.body;
-  // Create User: save the data of body
+
+  // Create User: save the data of body: we shouldn't save all the data.Should save only that are required
   const newUser = await User.create({
     username,
     email,
     password,
     passwordConfirm,
   });
+
   // sign a Token
   const token = signToken(newUser._id);
+
   // // send the token
   sendToken(res, token);
+
   // before sending the response, making password and active fields 'undefined' will hide these fields to the users during signup process.
   // This won't affect the database, rather make newUser variable modified.
   newUser.password = undefined;
   newUser.active = undefined;
+
   //send response
+  //Since we have sent the token through cookies, which is the best practice, there is no meaning of sending token though response again.
   sendResponse(res, 201, "success", newUser);
 });
 
@@ -62,7 +68,7 @@ export const logIn = catchAsync(async (req, res, next) => {
     return next(new AppError("Please provide both email and password", 400));
   }
 
-  //find the user associated with the email and add password with the user.
+  //find the user associated with the email and add password field with the user.
   // here we have to use 'findOne', otherwise it will find an array of users, which is not desirable
   const user = await User.findOne({ email: email }).select("+password");
 
