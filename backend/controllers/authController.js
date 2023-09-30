@@ -83,46 +83,46 @@ export const logIn = catchAsync(async (req, res, next) => {
   sendResponse(res, 201, "success", user);
 });
 
-// export const protect = catchAsync(async (req, res, next) => {
-//   // 1. check if there is any token
-//   const token = req.cookies.jwt;
+export const protect = catchAsync(async (req, res, next) => {
+  // 1. check if there is any token
+  const token = req.cookies.jwt;
 
-//   //another option:
-//   // const token = req.headers.cookie.split('=')[1]
+  //another option:
+  // const token = req.headers.cookie.split('=')[1]
 
-//   if (!token) {
-//     return next(new AppError("You are not logged-in", 401));
-//   }
+  if (!token) {
+    return next(new AppError("You are not logged-in", 401));
+  }
 
-//   //2. verify the token
-//   const decodedTokenObj = await promisify(jwt.verify)(
-//     token,
-//     process.env.JWT_SECRET
-//   );
+  //2. verify the token
+  const decodedTokenObj = await promisify(jwt.verify)(
+    token,
+    process.env.JWT_SECRET
+  );
 
-//   //3. after verification, with the id, find the user
-//   const user = await User.findById(decodedTokenObj.id);
+  //3. after verification, with the id, find the user
+  const user = await User.findById(decodedTokenObj.id);
 
-//   //4. check if user is present
-//   if (!user) {
-//     return next(
-//       new AppError(
-//         "You do not have any accout. Please create an account and come back.",
-//         401
-//       )
-//     );
-//   }
+  //4. check if user is present
+  if (!user) {
+    return next(
+      new AppError(
+        "You do not have any accout. Please create an account and come back.",
+        401
+      )
+    );
+  }
 
-//   //if user present, check if 'password' was created before the 'token'
-//   if (user.passwordChangedAfterTokenCreation(decodedTokenObj.iat)) {
-//     return next(
-//       new AppError("User recently changed password! Please log in again.", 401)
-//     );
-//   }
+  //if user present, check if 'password' was created before the 'token'
+  if (user.passwordChangedAfterTokenCreation(decodedTokenObj.iat)) {
+    return next(
+      new AppError("User recently changed password! Please log in again.", 401)
+    );
+  }
 
-//   // if we send currectUse in req.user, we'll able to use it in many cases without having much troubles
-//   req.user = user;
+  // if we send currectUse in req.user, we'll able to use it in many cases without having much troubles
+  req.user = user;
 
-//   //go to the next operation, if everything is OK.
-//   next();
-// });
+  //go to the next operation, if everything is OK.
+  next();
+});

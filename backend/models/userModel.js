@@ -47,8 +47,6 @@ const userSchema = new mongoose.Schema({
     type: String,
   },
 
-  dateOfBirth: String,
-
   role: {
     type: String,
     enum: ["admin", "author", "seller", "user"],
@@ -61,7 +59,13 @@ const userSchema = new mongoose.Schema({
     select: false,
   },
 
-  address: String,
+  address: {
+    street: String,
+    city: String,
+    state: String,
+    postalCode: String,
+    country: String,
+  },
 
   passwordChangedAt: Date,
   passwordResetToken: String,
@@ -98,25 +102,18 @@ userSchema.methods.isCorrectPassword = async function (
   return await bcrypt.compare(plainPassword, hashedPassword);
 };
 
-userSchema.methods.passwordChangedAfterTokenCreation = async function (
+userSchema.methods.passwordChangedAfterTokenCreation = function (
   tokenCreationTime
 ) {
   console.log(this.passwordChangedAT);
+  if (this.passwordChangedAT) {
+    const passwordChangedTime = parseInt(
+      this.passwordChangedAT.getTime() / 1000,
+      10
+    );
 
-  const passwordChangedTime = parseInt(
-    this.passwordChangedAT.getTime() / 1000,
-    10
-  );
-  console.log(passwordChangedTime);
-
-  // if (this.passwordChangedAT) {
-  //   const passwordChangedTime = parseInt(
-  //     this.passwordChangedAT.getTime() / 1000,
-  //     10
-  //   );
-
-  //   return tokenCreationTime < passwordChangedTime;
-  // }
+    return tokenCreationTime < passwordChangedTime;
+  }
   return false;
 };
 
