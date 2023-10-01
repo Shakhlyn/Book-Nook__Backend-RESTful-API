@@ -88,6 +88,12 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+// find only the users whose 'active' field is not 'false'
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
+  next();
+});
+
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password") || this.isNew) return next();
 
