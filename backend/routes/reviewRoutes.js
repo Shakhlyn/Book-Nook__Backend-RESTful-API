@@ -1,5 +1,7 @@
 import express from "express";
 
+import { protect, restrictTo } from "../controllers/authController.js";
+
 import {
   getAllReviews,
   getReview,
@@ -10,8 +12,15 @@ import {
 
 const router = express.Router();
 
-router.route("/").get(getAllReviews).post(createReview);
+router
+  .route("/")
+  .get(getAllReviews)
+  .post(protect, restrictTo("user"), createReview);
 
-router.route("/:id").get(getReview).patch(updateReview).delete(deleteReview);
+router
+  .route("/:id")
+  .get(getReview)
+  .patch(protect, updateReview)
+  .delete(protect, deleteReview);
 
 export default router;

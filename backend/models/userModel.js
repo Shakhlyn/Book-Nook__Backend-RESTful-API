@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import validator from "validator";
 
 const userSchema = new mongoose.Schema({
@@ -91,6 +92,7 @@ userSchema.pre("save", async function (next) {
   if (!this.isModified("password") || this.isNew) return next();
 
   this.passwordChangedAT = Date.now() - 1000;
+  // Practical problem: Saving to the db is slower than issuing a JWT. Therefore, passwordChangedAT must be earlier by 1 second.
 
   next();
 });
@@ -105,7 +107,6 @@ userSchema.methods.isCorrectPassword = async function (
 userSchema.methods.passwordChangedAfterTokenCreation = function (
   tokenCreationTime
 ) {
-  console.log(this.passwordChangedAT);
   if (this.passwordChangedAT) {
     const passwordChangedTime = parseInt(
       this.passwordChangedAT.getTime() / 1000,
@@ -115,6 +116,20 @@ userSchema.methods.passwordChangedAfterTokenCreation = function (
     return tokenCreationTime < passwordChangedTime;
   }
   return false;
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  // hash the token
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
 };
 
 const User = mongoose.model("User", userSchema);
