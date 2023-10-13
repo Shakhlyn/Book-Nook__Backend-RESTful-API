@@ -13,6 +13,7 @@ const reviewSchema = mongoose.Schema({
     default: 4.5,
     min: 1,
     max: 5,
+    required: [true, "rating can not be empty!"],
   },
 
   createdAt: {
@@ -31,6 +32,17 @@ const reviewSchema = mongoose.Schema({
     ref: "Book",
     required: [true, "A review must be belonged to a book"],
   },
+});
+
+reviewSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "user",
+    select: "username",
+  }).populate({
+    path: "book",
+    select: "title author ratingsAverage",
+  });
+  next();
 });
 
 const Review = mongoose.model("Review", reviewSchema);

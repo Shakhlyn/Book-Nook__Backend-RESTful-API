@@ -15,7 +15,7 @@ const bookSchema = new mongoose.Schema(
 
     isbn: {
       type: String,
-      required: [true, "A book must have a ISBN number"],
+      // required: [true, "A book must have a ISBN number"],
     },
 
     authors: {
@@ -114,6 +114,7 @@ const bookSchema = new mongoose.Schema(
   }
 );
 
+// Virtual Getter() function:  A virtual getter is a function that calculates the value of a virtual field.
 bookSchema.virtual("netPrice").get(function () {
   return this.price - this.price * (this.discount / 100);
 });
