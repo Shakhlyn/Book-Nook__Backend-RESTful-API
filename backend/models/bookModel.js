@@ -119,6 +119,12 @@ bookSchema.virtual("netPrice").get(function () {
   return this.price - this.price * (this.discount / 100);
 });
 
+bookSchema.virtual("reviews", {
+  ref: "Review",
+  localField: "_id",
+  foreignField: "book",
+});
+
 bookSchema.pre("save", function (next) {
   try {
     this.slug = slugify(this.title, { lower: true });

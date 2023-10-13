@@ -16,13 +16,17 @@ export const getAll = (Model) =>
     sendResponse(res, 200, "success", docs, docs.length);
   });
 
-export const getOne = (Model) =>
+export const getOne = (Model, populateOption) =>
   catchAsync(async (req, res, next) => {
-    let document = await Model.findById(req.params.id);
+    let query = await Model.findById(req.params.id).exec();
 
-    if (!document) {
+    if (!query) {
       return next(new AppError("No document found with that ID", 404));
     }
+
+    if (populateOption) query = await query.populate(populateOption);
+
+    const document = await query;
 
     sendResponse(res, 200, "success", document);
   });
