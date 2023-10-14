@@ -5,7 +5,12 @@ import ApiFeatures from "../utils/apiFeatures.js";
 
 export const getAll = (Model) =>
   catchAsync(async (req, res, next) => {
-    const customisedQuery = new ApiFeatures(Model.find(), req.query)
+    // To get all the reviews of a specific book
+    let filter = {};
+    if (req.params.bookId) filter = { book: req.params.bookId };
+
+    const customisedQuery = new ApiFeatures(Model.find(filter), req.query)
+      // const customisedQuery = new ApiFeatures(Model.find(), req.query)
       .filter()
       .sort()
       .limitFields()
