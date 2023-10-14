@@ -119,6 +119,7 @@ bookSchema.virtual("netPrice").get(function () {
   return this.price - this.price * (this.discount / 100);
 });
 
+// Virtual property
 bookSchema.virtual("reviews", {
   ref: "Review",
   localField: "_id",
