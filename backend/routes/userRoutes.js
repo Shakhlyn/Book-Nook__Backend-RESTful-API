@@ -1,12 +1,10 @@
 import express from "express";
 
-// import * as authController from "../controllers/authController.js";
-
 import {
-  signUp,
-  logIn,
   protect,
   restrictTo,
+  signUp,
+  logIn,
   forgotPassword,
   resetPassword,
   updateMyPassword,
@@ -30,15 +28,20 @@ router.post("/login", logIn);
 router.post("/forgotPassword", forgotPassword);
 router.patch("/resetPassword/:resetToken", resetPassword);
 
-router.get("/me", protect, getMyProfile, getUser);
-router.patch("/updateMyProfile", protect, updateMyProfile);
-router.patch("/deleteMyProfile", protect, deleteMyProfile);
-
-router.patch("/updateMyPassword", protect, updateMyPassword);
-
-router.route("/").get(protect, getAllUsers).post(createUser);
-
+// All the rest of the routes need to be authenticated: only logged-in user should access the APIs
 router.use(protect);
+
+router.get("/me", getMyProfile, getUser);
+router.patch("/updateMyProfile", updateMyProfile);
+router.patch("/deleteMyProfile", deleteMyProfile);
+
+router.patch("/updateMyPassword", updateMyPassword);
+
+// Rest of the APIs should be aacessed by only the 'admin'
+router.use(restrictTo("admin"));
+
+router.route("/").get(getAllUsers).post(createUser);
+
 router.route("/:id").get(getUser).patch(updateUser).delete(deleteUser);
 
 export default router;

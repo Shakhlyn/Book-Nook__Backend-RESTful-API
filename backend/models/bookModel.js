@@ -135,6 +135,10 @@ bookSchema.pre("save", function (next) {
   next();
 });
 
+bookSchema.index({ slug: 1 });
+bookSchema.index({ ratingsAverage: -1 });
+bookSchema.index({ ratingsAverage: -1, price: 1 });
+
 const Book = mongoose.model("Book", bookSchema);
 
 export default Book;

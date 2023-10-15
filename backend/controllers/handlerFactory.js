@@ -10,7 +10,6 @@ export const getAll = (Model) =>
     if (req.params.bookId) filter = { book: req.params.bookId };
 
     const customisedQuery = new ApiFeatures(Model.find(filter), req.query)
-      // const customisedQuery = new ApiFeatures(Model.find(), req.query)
       .filter()
       .sort()
       .limitFields()
