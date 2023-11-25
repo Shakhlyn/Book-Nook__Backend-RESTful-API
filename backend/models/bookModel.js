@@ -3,6 +3,7 @@ import slugify from "slugify";
 
 const bookSchema = new mongoose.Schema(
   {
+    // consider having a userModel in this book model; we will know which user, that is admin, posted the book to sell.
     title: {
       type: String,
       required: [true, "A book must have a name"],
@@ -81,10 +82,6 @@ const bookSchema = new mongoose.Schema(
       select: false,
     },
 
-    thumbnailUrl: String,
-
-    genre: String,
-
     publisher: String,
 
     stockQuantity: {
@@ -92,13 +89,7 @@ const bookSchema = new mongoose.Schema(
       required: [true, "A book must have quantity of stocks"],
     },
 
-    Dimention: String,
-
-    weight: Number,
-
     //   reviews: 'will be defined as virtual property'
-
-    format: String,
 
     edition: String,
 

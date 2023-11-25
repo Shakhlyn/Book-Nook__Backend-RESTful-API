@@ -31,7 +31,7 @@ const sendToken = (res, token) => {
   //set cookieOptions:
   const cookieOptions = setCookieOptions();
 
-  // send token
+  // send token or other word set the cookie
   res.cookie("jwt", token, cookieOptions);
 };
 
@@ -109,6 +109,7 @@ export const protect = catchAsync(async (req, res, next) => {
   );
 
   //3. after verification, with the id, find the user
+  // const user = await User.findById(decodedTokenObj.id).select("-password"); //this will prevent password being disclosed.
   const user = await User.findById(decodedTokenObj.id);
 
   //4. check if user is present

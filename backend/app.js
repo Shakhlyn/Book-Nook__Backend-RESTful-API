@@ -69,9 +69,10 @@ app.use(
   })
 );
 
-// testing middleware:
+// // testing middleware:
 // app.use((req, res, next) => {
-//   // console.log(req.headers);
+//   console.log(req.headers);
+//   console.log(req.user);
 //   next();
 // });
 
