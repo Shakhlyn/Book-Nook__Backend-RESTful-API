@@ -5,6 +5,7 @@ import {
   restrictTo,
   signUp,
   logIn,
+  logout,
   forgotPassword,
   resetPassword,
   updateMyPassword,
@@ -34,8 +35,8 @@ router.use(protect);
 router.get("/me", getMyProfile, getUser);
 router.patch("/updateMyProfile", updateMyProfile);
 router.patch("/deleteMyProfile", deleteMyProfile);
-
 router.patch("/updateMyPassword", updateMyPassword);
+router.post("/logout", logout);
 
 // Rest of the APIs should be aacessed by only the 'admin'
 router.use(restrictTo("admin"));
