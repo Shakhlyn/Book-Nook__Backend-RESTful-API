@@ -20,7 +20,10 @@ const orderSchema = mongoose.Schema(
           min: 1,
           required: [true, "An order must have minimum one book"],
         },
-        image: { type: String, required: [true, "An order must have image"] },
+        image: {
+          type: String,
+          //  required: [true, "An order must have image"]
+        },
         price: {
           type: Number,
           min: 0,
@@ -53,7 +56,7 @@ const orderSchema = mongoose.Schema(
       },
     },
 
-    PaymentMethod: {
+    paymentMethod: {
       type: String,
       required: [true, "An order must have a payment method"],
     },
@@ -105,8 +108,8 @@ const orderSchema = mongoose.Schema(
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  },
-  {
+    //   },
+    //   {
     timestamps: true,
   }
 );
