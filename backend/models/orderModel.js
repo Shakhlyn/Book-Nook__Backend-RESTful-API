@@ -63,26 +63,27 @@ const orderSchema = mongoose.Schema(
     //     update_time: { type: String },
     //     email_address: { type: String },
     //   },
-    itemsPrice: {
-      type: Number,
-      required: [true, "An order must have itemsPrice for all the books"],
-    },
-    tax: {
-      type: Number,
-      default: 0.0,
-      required: [true, "Tax must be added to the itemsPrice"],
-    },
-    shippingPrice: {
-      type: Number,
-      default: 0.0,
-      required: [true, "shippingPrice must be added to the itemsPrice"],
-    },
 
-    totalPrice: {
-      type: Number,
-      default: 0.0,
-      required: [true, "An order must have totalPrice"],
-    },
+    // itemsPrice: {
+    //   type: Number,
+    //   required: [true, "An order must have itemsPrice for all the books"],
+    // },
+    // tax: {
+    //   type: Number,
+    //   default: 0.0,
+    //   required: [true, "Tax must be added to the itemsPrice"],
+    // },
+    // shippingPrice: {
+    //   type: Number,
+    //   default: 0.0,
+    //   required: [true, "shippingPrice must be added to the itemsPrice"],
+    // },
+
+    // totalPrice: {
+    //   type: Number,
+    //   default: 0.0,
+    //   required: [true, "An order must have totalPrice"],
+    // },
     isPaid: {
       type: Boolean,
       default: false,
@@ -105,6 +106,29 @@ const orderSchema = mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Virtual Getter() function
+orderSchema.virtual("itemsPrice").get(function () {
+  const itemsPrice = this.orderItems.reduce(
+    (acc, item) => acc + item.qty * item.price,
+    0
+  );
+  return itemsPrice;
+});
+orderSchema.virtual("tax").get(function () {
+  // tax is 10% on books
+  return this.itemsPrice * 0.1;
+});
+
+orderSchema.virtual("shippingPrice").get(function () {
+  const shippingPrice = this.itemsPrice >= 100 ? 0 : 10;
+  return shippingPrice;
+});
+
+orderSchema.virtual("totalPrice").get(function () {
+  const totalPrice = this.itemsPrice + this.tax + this.shippingPrice;
+  return totalPrice;
+});
 
 const Order = mongoose.model("order", orderSchema);
 
