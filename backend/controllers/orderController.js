@@ -29,4 +29,14 @@ const placeOrder = catchAsync(async (req, res, next) => {
   });
 });
 
-export { placeOrder };
+const getOrderById = catchAsync(async (req, res, next) => {
+  const order = await Order.findById(req.params.id).populate({
+    path: "user",
+    select: "username email",
+  });
+  res.status(200).json({
+    data: order,
+  });
+});
+
+export { placeOrder, getOrderById };
