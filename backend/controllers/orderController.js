@@ -1,6 +1,7 @@
 import Order from "../models/orderModel.js";
 import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/appError.js";
+import { deleteOne } from "./handlerFactory.js";
 
 const placeOrder = catchAsync(async (req, res, next) => {
   const { orderItems, shippingAddress, paymentMethod } = req.body;
@@ -69,4 +70,6 @@ const getMyOrders = catchAsync(async (req, res) => {
   });
 });
 
-export { placeOrder, getOrderById, getAllOrders, getMyOrders };
+const deleteAnOrder = deleteOne(Order);
+
+export { placeOrder, getOrderById, getAllOrders, getMyOrders, deleteAnOrder };
