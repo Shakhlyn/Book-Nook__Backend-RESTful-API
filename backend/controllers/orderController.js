@@ -31,6 +31,7 @@ const placeOrder = catchAsync(async (req, res, next) => {
 
 const getAllOrders = catchAsync(async (req, res, next) => {
   const orders = await Order.find({}).populate({
+    // since 'user' is referenced in the order schema, we have to populate path and fields to show the desired fields
     path: "user",
     select: "username, email",
   });
@@ -52,4 +53,20 @@ const getOrderById = catchAsync(async (req, res, next) => {
   });
 });
 
-export { placeOrder, getOrderById, getAllOrders };
+const getMyOrders = catchAsync(async (req, res) => {
+  const orders = await Order.find({ user: req.user._id }).populate({
+    path: "user",
+    select: "username email",
+  });
+
+  if (!orders) {
+    return next(new AppError("Document not found", 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: orders,
+  });
+});
+
+export { placeOrder, getOrderById, getAllOrders, getMyOrders };

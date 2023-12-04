@@ -5,6 +5,7 @@ import {
   placeOrder,
   getOrderById,
   getAllOrders,
+  getMyOrders,
 } from "../controllers/orderController.js";
 
 const router = express.Router();
@@ -14,6 +15,7 @@ router
   .get(protect, restrictTo("admin"), getAllOrders)
   .post(protect, placeOrder);
 
+router.get("/my-order", protect, getMyOrders);
 router.get("/:id", protect, getOrderById);
 
 export default router;
