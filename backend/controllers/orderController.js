@@ -29,6 +29,19 @@ const placeOrder = catchAsync(async (req, res, next) => {
   });
 });
 
+const getAllOrders = catchAsync(async (req, res, next) => {
+  const orders = await Order.find({}).populate({
+    path: "user",
+    select: "username, email",
+  });
+
+  res.status(200).json({
+    status: "success",
+    result: orders.length,
+    data: orders,
+  });
+});
+
 const getOrderById = catchAsync(async (req, res, next) => {
   const order = await Order.findById(req.params.id).populate({
     path: "user",
@@ -39,4 +52,4 @@ const getOrderById = catchAsync(async (req, res, next) => {
   });
 });
 
-export { placeOrder, getOrderById };
+export { placeOrder, getOrderById, getAllOrders };

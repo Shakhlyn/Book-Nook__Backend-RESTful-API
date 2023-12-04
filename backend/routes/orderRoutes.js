@@ -1,11 +1,18 @@
 import express from "express";
 
-import { protect } from "../controllers/authController.js";
-import { placeOrder, getOrderById } from "../controllers/orderController.js";
+import { protect, restrictTo } from "../controllers/authController.js";
+import {
+  placeOrder,
+  getOrderById,
+  getAllOrders,
+} from "../controllers/orderController.js";
 
 const router = express.Router();
 
-router.post("/", protect, placeOrder);
+router
+  .route("/")
+  .get(protect, restrictTo("admin"), getAllOrders)
+  .post(protect, placeOrder);
 
 router.get("/:id", protect, getOrderById);
 
