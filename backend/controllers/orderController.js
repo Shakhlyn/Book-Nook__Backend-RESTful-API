@@ -72,4 +72,29 @@ const getMyOrders = catchAsync(async (req, res) => {
 
 const deleteAnOrder = deleteOne(Order);
 
-export { placeOrder, getOrderById, getAllOrders, getMyOrders, deleteAnOrder };
+const updateIsOrderDelivered = catchAsync(async (req, res) => {
+  const order = await Order.findById(req.params.id);
+
+  if (!order) {
+    return next(AppError("Order not found!", 400));
+  }
+
+  order.isDelivered = true;
+  order.deliveredAt = Date.now();
+
+  const updatedOrder = await order.save();
+
+  res.status(200).json({
+    status: "success",
+    data: updatedOrder,
+  });
+});
+
+export {
+  placeOrder,
+  getOrderById,
+  getAllOrders,
+  getMyOrders,
+  deleteAnOrder,
+  updateIsOrderDelivered,
+};

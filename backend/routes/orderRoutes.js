@@ -7,6 +7,7 @@ import {
   getAllOrders,
   getMyOrders,
   deleteAnOrder,
+  updateIsOrderDelivered,
 } from "../controllers/orderController.js";
 
 const router = express.Router();
@@ -22,4 +23,10 @@ router
   .get(protect, getOrderById)
   .delete(protect, restrictTo("admin"), deleteAnOrder);
 
+router.put(
+  "/:id/deliver",
+  protect,
+  restrictTo("admin"),
+  updateIsOrderDelivered
+);
 export default router;
