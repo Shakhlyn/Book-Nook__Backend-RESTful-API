@@ -23,7 +23,7 @@ router
   .get(protect, getOrderById)
   .delete(protect, restrictTo("admin"), deleteAnOrder);
 
-router.put(
+router.patch(
   "/:id/deliver",
   protect,
   restrictTo("admin"),
