@@ -2,8 +2,6 @@ import mongoose from "mongoose";
 
 import Book from "./bookModel.js";
 
-// import Book from "./bookModel";
-
 const reviewSchema = mongoose.Schema({
   review: {
     type: String,

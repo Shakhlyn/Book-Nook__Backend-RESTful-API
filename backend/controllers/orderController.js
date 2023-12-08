@@ -1,7 +1,7 @@
 import Order from "../models/orderModel.js";
 import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/appError.js";
-import { deleteOne } from "./handlerFactory.js";
+import { getOne, deleteOne } from "./handlerFactory.js";
 
 const placeOrder = catchAsync(async (req, res, next) => {
   const { orderItems, shippingAddress, paymentMethod } = req.body;
@@ -44,14 +44,9 @@ const getAllOrders = catchAsync(async (req, res, next) => {
   });
 });
 
-const getOrderById = catchAsync(async (req, res, next) => {
-  const order = await Order.findById(req.params.id).populate({
-    path: "user",
-    select: "username email",
-  });
-  res.status(200).json({
-    data: order,
-  });
+const getOrderById = getOne(Order, {
+  path: "user",
+  select: "username email",
 });
 
 const getMyOrders = catchAsync(async (req, res) => {
